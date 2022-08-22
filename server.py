@@ -67,12 +67,12 @@ class apiPage(Resource):
 
 if __name__ == "__main__":
     ServerFactory = BroadcastServerFactory
-    factory = ServerFactory("ws://localhost:9000")
+    factory = ServerFactory("ws://0.0.0.0:"+os.environ["PORT"])
 
     factory.protocol = BroadcastServerProtocol
-    listenWS(factory)
     root = Resource()
     root.putChild(b"api", apiPage(factory))
+    # root.putChild(b"ws", apiPage(factory))
     web = Site(root)
     reactor.listenTCP(int(os.environ["PORT"]), web)
 
