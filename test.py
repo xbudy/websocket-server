@@ -1,6 +1,6 @@
 import requests
 
 
-r = requests.post("http://localhost:8080/api", data = {"client-id" :"1"})
+r = requests.post("https://python-socket-api.herokuapp.com/api", data = {"client-id" :"1"})
 
 print(r.text, )

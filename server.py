@@ -1,10 +1,8 @@
-from time import sleep
 from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.web.resource import Resource
 from autobahn.twisted.resource import WebSocketResource
-from twisted.web.static import Data, File
-from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol, listenWS
+from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol
 
 import os
 
@@ -65,7 +63,7 @@ class apiPage(Resource):
         return '<html><body><form method="POST"><input name="the-field" type="text" /></form></body></html>'
 
     def render_POST(self, request):
-        self.factory.broadcast("hi", client_id=dict(request.args)[b"client-id"][0].decode("utf-8"))
+        self.factory.broadcast("UPDATE", client_id=dict(request.args)[b"client-id"][0].decode("utf-8"))
         return ('<html><body>You submitted: %s</body></html>' % dict(request.args)[b"client-id"][0].decode("utf-8")).encode()
 
 
