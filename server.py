@@ -2,6 +2,8 @@ from time import sleep
 from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.web.resource import Resource
+from autobahn.twisted.resource import WebSocketResource
+from twisted.web.static import Data, File
 from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol, listenWS
 
 import os
@@ -26,11 +28,12 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
 
 
 class BroadcastServerFactory(WebSocketServerFactory):
-    def __init__(self, url):
-        WebSocketServerFactory.__init__(self, url)
+    def __init__(self):
+        WebSocketServerFactory.__init__(self)
         self.clients = {}
 
     def register(self, client):
+        print(self.clients)
         if client.client_id not in self.clients.keys():
             print("registered client {}".format(client.peer))
             self.clients[client.client_id] = client
@@ -52,6 +55,7 @@ class BroadcastServerFactory(WebSocketServerFactory):
             if client_id in self.clients:
                 self.clients[client_id].sendMessage(msg.encode('utf-8'))
 
+
 class apiPage(Resource):
     def __init__(self, w: BroadcastServerFactory):
         super().__init__()
@@ -67,13 +71,13 @@ class apiPage(Resource):
 
 if __name__ == "__main__":
     ServerFactory = BroadcastServerFactory
-    factory = ServerFactory("ws://0.0.0.0:"+os.environ["PORT"])
-
+    factory = ServerFactory()
     factory.protocol = BroadcastServerProtocol
+    r = WebSocketResource(factory)
     root = Resource()
     root.putChild(b"api", apiPage(factory))
-    # root.putChild(b"ws", apiPage(factory))
+    root.putChild(b"ws", r)
     web = Site(root)
-    reactor.listenTCP(int(os.environ["PORT"]), web)
+    reactor.listenTCP(int(os.getenv("PORT")), web)
 
     reactor.run()

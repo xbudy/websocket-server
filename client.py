@@ -1,6 +1,6 @@
 from websocket import create_connection
 
-ws = create_connection("wss://python-socket-api.herokuapp.com:9000/ws", header = ["client-id: 1"])
+ws = create_connection("ws://localhost:8080/ws", header = ["client-id: 1"])
 print("Connection established")
 while True:
     try:
